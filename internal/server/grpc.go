@@ -3,6 +3,7 @@ package server
 import (
 	"database/sql"
 	"grpc_crud_go/internal/handler"
+	"grpc_crud_go/internal/interceptor"
 	"grpc_crud_go/internal/service"
 	"grpc_crud_go/internal/store"
 	pb "grpc_crud_go/proto"
@@ -13,7 +14,9 @@ import (
 )
 
 func NewGRPCServer(db *sql.DB) *grpc.Server {
-	grpcServer := grpc.NewServer()
+	grpcServer := grpc.NewServer(
+		grpc.UnaryInterceptor(interceptor.LoggingInterceptor),
+	)
 
 	userStore := store.NewUserStore(db)
 	userService := service.NewUserService(userStore)
